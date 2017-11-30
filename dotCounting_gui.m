@@ -59,7 +59,7 @@ handles.output = hObject;
 
 % Initializing variables
 handles.open_stack = 0;
-handles.num_channel = 3;
+% handles.num_channel = 3;
 handles.stack.autothreshold = 1;
 handles.list_of_open_objects = []; % unused
 % Update handles structure
@@ -171,22 +171,23 @@ function handles = update_stackViewer_display(hObject,handles)
 
 if handles.image_displayed
     
+     if isempty(handles.current_image_stack)
+        % Load the file stack 
+        
+        [handles.current_image_stack, handles.num_channel] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
+        
+    end
+    
+    
     %     set(handles.txt_image_counter,'String', [num2str(handles.image_displayed) '/' num2str(handles.stack.number_images) ] );
     %     set(handles.slider_select_image, 'Value', handles.image_displayed);
     set(handles.stackViewer.c_slider, 'Min', 1);
     set(handles.stackViewer.c_slider, 'Max', handles.num_channel);
     set(handles.stackViewer.c_slider, 'SliderStep', [1/(handles.num_channel-1) , 1/(handles.num_channel-1) ]);
     
-    num_channels = handles.num_channel;
     
     
-    if isempty(handles.current_image_stack)
-        % Load the file stack %ADD NUMBER CHANNEL DETECTION
-        
-        handles.current_image_stack = czi_open(handles.stack.image_path_cell{handles.image_displayed}, num_channels);
-        
-    end
-    
+   
     handles.num_z_slices = size(handles.current_image_stack{1},3);
     
     set(handles.stackViewer.z_slider, 'Min', 1);
@@ -444,13 +445,14 @@ if handles.image_displayed
     set(handles.slider_select_image, 'Min', 1);
     set(handles.slider_select_image, 'Max', handles.stack.number_images);
     set(handles.slider_select_image, 'SliderStep', [1/(handles.stack.number_images-1) , 1/(handles.stack.number_images-1) ]);
-    num_channels = handles.num_channel;
     if isempty(handles.current_image_stack)
         % Load the file stack %ADD NUMBER CHANNEL DETECTION
         
-        handles.current_image_stack = czi_open(handles.stack.image_path_cell{handles.image_displayed}, num_channels);
-        
+        [handles.current_image_stack, handles.num_channel] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
+            
+
     end
+    num_channels = handles.num_channel;
     imdata = handles.current_image_stack;
     % Show max proj of current stack (first 3 channels)
     max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(num_channels,3));
@@ -683,7 +685,7 @@ function handles = rethreshold_cell(handles, frameNo, cellNo)
 
  BW_mask = handles.stack.frame(frameNo).cell(cellNo).mask ; 
  if frameNo ~= handles.image_displayed %need to load the file
-     imdata = czi_open(handles.stack.image_path_cell{frameNo}, handles.num_channel);
+     imdata = czi_open(handles.stack.image_path_cell{frameNo});
  else
      imdata = handles.current_image_stack;
  end
