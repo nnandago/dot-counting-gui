@@ -242,8 +242,8 @@ if handles.image_displayed
         bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
         cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
         
-        lower_bound(i) = find(cdf> 0.05,1, 'first');
-        higher_bound(i) = find(cdf> 0.95,1, 'first');
+        lower_bound(i) = find(cdf> 0.01,1, 'first');
+        higher_bound(i) = find(cdf> 0.99,1, 'first');
         max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
         
     end
@@ -325,9 +325,9 @@ if handles.image_displayed
     end
     
     if handles.stackViewer.min_value(current_channel) == 0
-        lower_bound = find(cdf> 0.02,1, 'first');
+        lower_bound = find(cdf> 0.01,1, 'first');
         handles.stackViewer.min_value(current_channel) = lower_bound;
-        higher_bound = find(cdf> 0.98,1, 'first');
+        higher_bound = find(cdf> 0.99,1, 'first');
         handles.stackViewer.max_value(current_channel) = higher_bound;
     end
     
@@ -405,8 +405,8 @@ if handles.image_displayed
         bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
         cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
         
-        lower_bound(i) = find(cdf> 0.05,1, 'first');
-        higher_bound(i) = find(cdf> 0.95,1, 'first');
+        lower_bound(i) = find(cdf> 0.01,1, 'first');
+        higher_bound(i) = find(cdf> 0.99,1, 'first');
         max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
         
     end
@@ -414,6 +414,9 @@ if handles.image_displayed
     imshow(max_proj_rescaled)
     
     BW_mask = roipoly;
+    handles.stack.frame(handles.image_displayed).number_cells = handles.stack.frame(handles.image_displayed).number_cells + 1;
+
+    
     if isfield(handles.stack, 'dot_thresholds') && handles.stack.live_dot_finding
         [handles, dots] = dotCounting(handles, imdata, BW_mask);
         handles.stack.frame(handles.image_displayed).cell(handles.stack.frame(handles.image_displayed).number_cells).dots = dots;
@@ -424,7 +427,6 @@ if handles.image_displayed
         set(handles.menu_removeCell, 'Enable', 'On')
     end
     
-    handles.stack.frame(handles.image_displayed).number_cells = handles.stack.frame(handles.image_displayed).number_cells + 1;
     handles.stack.frame(handles.image_displayed).cell(handles.stack.frame(handles.image_displayed).number_cells).mask  = BW_mask;
     
     handles = update_display(hObject,handles);
@@ -550,7 +552,7 @@ function menu_detectDots_Callback(hObject, eventdata, handles)
         handles.threshold.window = figure('Name', 'Threshold settings', 'Menubar', 'none', 'Position', [window_position(1), window_position(2), 261, 271], 'CloseReq', {@menu_threshold_CloseRequest_Fcn, hObject}); % 'Keypress', {@onkeypress, hObject}'ResizeFcn', {@movie_slider_ResizeFcn, hObject});
         handles.threshold.status = uicontrol(gcf, 'Style', 'text', 'Position', [141, 150, 104, 35], 'String', 'Status: Done', 'FontSize', 16);
         
-        if ~isfield(handles, 'dot_thresholds')
+        if ~isfield(handles.stack, 'dot_thresholds')
             handles = get_thresholds(handles);
             if handles.stack.frame(handles.image_displayed).number_cells > 0
                 handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
@@ -558,15 +560,29 @@ function menu_detectDots_Callback(hObject, eventdata, handles)
         end
         
         handles.threshold.chk_auto_threshold = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 218, 95, 19], 'Value', 1, 'String', 'Auto Threshold', 'Callback', {@chk_auto_threshold_Callback, hObject});
-        handles.stack.autothreshold = 1;
+       
+        if isfield(handles.stack,'autothreshold')
+            set(handles.threshold.chk_auto_threshold, 'value',handles.stack.autothreshold);
+        else
+            handles.stack.autothreshold = 1;
+        end
         handles.threshold.chk_live_dot_finding = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 250, 95, 19], 'Value', 1, 'String', 'Live dot finding', 'Callback', {@chk_live_dot_finding_Callback, hObject});
-        handles.stack.live_dot_finding = 1;
+        
+        if isfield(handles.stack,'live_dot_finding')
+            set(handles.threshold.chk_live_dot_finding, 'value',handles.stack.live_dot_finding);
+        else
+            handles.stack.live_dot_finding = 1;
+        end
+      
     
         handles.threshold.button_rethreshold = uicontrol(gcf, 'Style', 'pushbutton', 'Position', [141, 210, 84, 35], 'String', 'Detect Dots', 'Callback', {@button_rethreshold_Callback, hObject});
         
         for i=1:handles.num_channels
-            handles.threshold.(['edit_channel' num2str(i)]) = uicontrol(gcf, 'Style', 'edit', 'Position', [26, 170-40*(i-1), 46, 34], 'String', num2str(handles.stack.dot_thresholds(i)), 'Callback', {@change_threshold_Callback, hObject}, 'Tag', ['edit_channel' num2str(i)], 'Enable', 'off');
+            handles.threshold.(['edit_channel' num2str(i)]) = uicontrol(gcf, 'Style', 'edit', 'Position', [26, 170-40*(i-1), 46, 34], 'String', num2str(handles.stack.dot_thresholds(i)), 'Callback', {@change_threshold_Callback, hObject}, 'Tag', ['edit_channel' num2str(i)], 'Enable', 'on');
             %handles.threshold.(['channel' num2str(i)]) = '';
+            if handles.stack.autothreshold
+                set(handles.threshold.(['edit_channel' num2str(i)]),'enable','off');
+            end
         end
         
     end
@@ -619,8 +635,8 @@ function menu_removeCell_Callback(hObject, eventdata, handles)
             bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
             cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
 
-            lower_bound(i) = find(cdf> 0.05,1, 'first');
-            higher_bound(i) = find(cdf> 0.95,1, 'first');
+            lower_bound(i) = find(cdf> 0.01,1, 'first');
+            higher_bound(i) = find(cdf> 0.99,1, 'first');
             max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
 
         end
@@ -926,7 +942,8 @@ function chk_auto_threshold_Callback(parent,~ ,hObject)
 
     if get(parent,'value')
         handles.stack.autothreshold = 1;
-        
+        handles.threshold.status.String = 'Detecting ...';
+         pause(1);
         handles = get_thresholds(handles);
         if handles.stack.frame(handles.image_displayed).number_cells > 0
             handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
@@ -939,7 +956,7 @@ function chk_auto_threshold_Callback(parent,~ ,hObject)
             handles.threshold.(['edit_channel' num2str(i)]).String = num2str(handles.stack.dot_thresholds(i));
             handles.threshold.(['edit_channel' num2str(i)]).Enable = 'off';
         end
-        
+        handles.threshold.status.String = 'Status: Done';
     else
         handles.stack.autothreshold = 0;
         for i=1:handles.num_channels

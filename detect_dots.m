@@ -17,7 +17,14 @@ function dots = detect_dots(imdata, seg_im, num_channels, thresholds)
         good_dots_stats = stats(idx_to_keep);
         dots(k).properties = good_dots_stats;
         dots(k).counts = length(good_dots_stats);  
-        centroids{k} = reshape([good_dots_stats.Centroid], 3, length(good_dots_stats))';
+        if dots(k).counts
+            if size(good_dots_stats(1).Centroid,2) ==3 %3D image
+                centroids{k} = reshape([good_dots_stats.Centroid], 3, length(good_dots_stats))';
+            else
+                centroids{k} = reshape([good_dots_stats.Centroid], 2, length(good_dots_stats))';
+                centroids{k}(:,3)=1; % on plane 1 in 3D
+            end
+        end
     end
     
     % compare other channels to first channel and eliminate dots
