@@ -22,7 +22,7 @@ function varargout = dotCounting_gui(varargin)
 
 % Edit the above text to modify the response to help dotCounting_gui
 
-% Last Modified by GUIDE v2.5 18-Dec-2017 17:48:03
+% Last Modified by GUIDE v2.5 29-Nov-2017 16:11:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,7 +59,7 @@ handles.output = hObject;
 
 % Initializing variables
 handles.open_stack = 0;
-% handles.num_channels = 3;
+% handles.num_channel = 3;
 handles.stack.autothreshold = 1;
 handles.list_of_open_objects = []; % unused
 % Update handles structure
@@ -82,10 +82,11 @@ varargout{1} = handles.output;
 
 
 % --------------------------------------------------------------------
-function menu_File_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_File (see GCBO)
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 
 % --------------------------------------------------------------------
 function menu_cells_Callback(hObject, eventdata, handles)
@@ -93,11 +94,13 @@ function menu_cells_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
 % --------------------------------------------------------------------
 function menu_window_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_window (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 
 % --------------------------------------------------------------------
 function menu_stackViewer_Callback(hObject, eventdata, handles)
@@ -111,47 +114,27 @@ if strcmp(handles.menu_stackViewer.Checked,'on')
     stackViewer_CloseRequest_Fcn(handles.stackViewer.window, 1, hObject);
 else
     handles.menu_stackViewer.Checked = 'on';
-    handles.stackViewer.window = figure('Name', 'Stack Viewer', 'MenuBar', 'none', 'Toolbar', 'figure', 'CloseReq', {@stackViewer_CloseRequest_Fcn, hObject}); % 'Keypress', {@onkeypress, hObject}'ResizeFcn', {@movie_slider_ResizeFcn, hObject});
-     
+    handles.stackViewer.window = figure('Name', 'Stack Viewer', 'Menubar', 'none', 'Toolbar', 'figure', 'CloseReq', {@stackViewer_CloseRequest_Fcn, hObject}); % 'Keypress', {@onkeypress, hObject}'ResizeFcn', {@movie_slider_ResizeFcn, hObject});
     handles.stackViewer.axes = axes('Hittest', 'off');
- 
-    handles.stackViewer.z_slider = uicontrol(gcf, 'Style', 'slider', 'Position', [115, 25, 350, 20], 'Value', 1, 'Callback', {@stackViewer_z_slider_Callback, hObject});
-    uicontrol('Style', 'text', 'String', 'Z', 'Position', [85, 25, 10, 20])
+    
+    handles.stackViewer.z_slider = uicontrol(gcf, 'Style', 'slider', 'Position', [65, 5, 450, 30], 'Value', 1, 'Callback', {@stackViewer_z_slider_Callback, hObject});
     handles.stackViewer.z_value = 1;
-    handles.stackViewer.c_slider = uicontrol(gcf, 'Style', 'slider', 'Position', [115, 5, 350, 20], 'Value', 1, 'Callback', {@stackViewer_c_slider_Callback, hObject});
-    uicontrol('Style', 'text', 'String', 'C', 'Position', [85, 5, 10, 20])
-    
-    uicontrol('Units', 'normalized', 'Style', 'text', 'String', 'Intensity', 'Position', [0.035 0.55 0.1 0.05]); 
-    uicontrol('Units', 'normalized', 'Style', 'text', 'String', 'Min:', 'Position', [0.02 0.5 0.05 0.05]); 
-    handles.stackViewer.min_box = uicontrol('Units', 'normalized', 'Style', 'edit', 'Position', [0.08 0.505 0.05 0.05], 'Callback', {@stackViewer_minbox_Callback, hObject});
-    uicontrol('Units', 'normalized', 'Style', 'text', 'String', 'Max:', 'Position', [0.02 0.4 0.05 0.05]);
-    handles.stackViewer.max_box = uicontrol('Units', 'normalized', 'Style', 'edit', 'Position', [0.08 0.405 0.05 0.05], 'Callback', {@stackViewer_maxbox_Callback, hObject});
-    
-    uicontrol('Units', 'normalized', 'Style', 'text', 'String', 'Show dots', 'Position', [0.01 0.3 0.15 0.05]);
-    handles.stackViewer.showdots_box = uicontrol('Units', 'normalized', 'Style', 'checkbox', 'Value', 0, 'Position', [0.14 0.32 0.03 0.03], 'Callback', {@stackViewer_showdots_box_Callback, hObject});   
-    
+    handles.stackViewer.c_slider = uicontrol(gcf, 'Style', 'slider', 'Position', [65, 35, 450, 30], 'Value', 1, 'Callback', {@stackViewer_c_slider_Callback, hObject});
     handles.stackViewer.c_value = 1;
     handles.stackViewer.z_slider.Units = 'normalized';
     handles.stackViewer.c_slider.Units = 'normalized';
-    handles = update_stackViewer_display(hObject,handles);   
+    handles = update_stackViewer_display(hObject,handles);
+
+    
 end
 guidata(hObject, handles)
 
-% --------------------------------------------------------------------
-function stackViewer_showdots_box_Callback(parent,~ ,hObject)
-
-   handles = guidata(hObject);
-   handles = update_stackViewer_display(hObject, handles);
-   guidata(hObject, handles);
-
-% --------------------------------------------------------------------
 function stackViewer_CloseRequest_Fcn(parent,~ ,hObject)
 delete(parent);
 handles = guidata(hObject);
 handles.menu_stackViewer.Checked = 'off';
 guidata(hObject, handles)
 
-% --------------------------------------------------------------------
 function stackViewer_z_slider_Callback(parent,~ ,hObject)
 handles = guidata(hObject);
 z_value = round(get(parent,'Value'));
@@ -167,7 +150,6 @@ end
 
 guidata(hObject, handles)
 
-% --------------------------------------------------------------------
 function stackViewer_c_slider_Callback(parent,~ ,hObject)
 handles = guidata(hObject);
 
@@ -183,108 +165,35 @@ end
 
 guidata(hObject, handles)
 
-% --------------------------------------------------------------------
-function stackViewer_minbox_Callback(~, ~, hObject)
+%%%%%%%%%%%%%%%%%%%%%%
 
-    handles = guidata(hObject);
-    channel = handles.stackViewer.c_value;
-    handles.stackViewer.min_value(channel) = str2double(handles.stackViewer.min_box.String);
-    handles = update_stackViewer_display(hObject,handles);
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function stackViewer_maxbox_Callback(~, ~, hObject)
-
-    handles = guidata(hObject);
-    channel = handles.stackViewer.c_value;
-    handles.stackViewer.max_value(channel) = str2double(handles.stackViewer.max_box.String);
-    handles = update_stackViewer_display(hObject,handles);
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function handles = update_display(hObject,handles)
-% TO DO: show cell outline
-% TO DO: select cell to zoom on, keep focus on
-if handles.image_displayed == 0 && handles.stack.number_images >= 1
-    handles.image_displayed = 1;
-    handles.main_window_axes = gca;
-end
-
-if handles.image_displayed
-    set(handles.txt_image_counter,'String', [num2str(handles.image_displayed) '/' num2str(handles.stack.number_images) ], 'FontSize', 12);
-    if handles.stack.number_images > 1
-        set(handles.slider_select_image, 'Enable', 'on');
-        set(handles.slider_select_image, 'Value', handles.image_displayed);
-        set(handles.slider_select_image, 'Min', 1);
-        set(handles.slider_select_image, 'Max', handles.stack.number_images);
-        set(handles.slider_select_image, 'SliderStep', [1/(handles.stack.number_images - 1), 1/(handles.stack.number_images - 1)]);
-    else
-        set(handles.slider_select_image, 'Enable', 'off');
-    end
-    
-    if isempty(handles.current_image_stack)
-        % Load the file stack %ADD NUMBER CHANNEL DETECTION      
-        [handles.current_image_stack, handles.num_channels] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
-    end
-    
-    num_channels = handles.num_channels;
-    imdata = handles.current_image_stack;
-    % Show max proj of current stack (first 3 channels)
-    max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(num_channels,3));
-    for i=1:min(num_channels,3)
-        max_proj{i} = max(imdata{i},[],3);
-        
-        % Automatic rescaling to display RGB
-        bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
-        cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
-        
-        lower_bound(i) = find(cdf> 0.05,1, 'first');
-        higher_bound(i) = find(cdf> 0.95,1, 'first');
-        max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
-        
-    end
-    
-    mask_im = max_proj_rescaled;
-    if strcmp(handles.menu_showSegment.Checked, 'on')
-        colors = parula(handles.stack.frame(handles.image_displayed).number_cells);
-        for k = 1:handles.stack.frame(handles.image_displayed).number_cells
-            dilated_im = imdilate(handles.stack.frame(handles.image_displayed).cell(k).mask, strel('square', 5));
-            outline_im = imdilate(dilated_im, strel('square', 5)) - handles.stack.frame(handles.image_displayed).cell(k).mask;
-            mask_im = imoverlay(mask_im, logical(outline_im), colors(k, :));
-        end
-    end
-        
-    axes(handles.main_window_axes);
-    imshow(mask_im)
-        
-    if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update stackViewer
-        handles = update_stackViewer_display(hObject,handles);
-    end
-    
-    guidata(hObject, handles);
-     
-end
-
-% --------------------------------------------------------------------
 function handles = update_stackViewer_display(hObject,handles)
 
 if handles.image_displayed
     
      if isempty(handles.current_image_stack)
-        % Load the file stack       
-        [handles.current_image_stack, handles.num_channels] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
+        % Load the file stack 
+        
+        [handles.current_image_stack, handles.num_channel] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
         
     end
     
+    
+    %     set(handles.txt_image_counter,'String', [num2str(handles.image_displayed) '/' num2str(handles.stack.number_images) ] );
+    %     set(handles.slider_select_image, 'Value', handles.image_displayed);
     set(handles.stackViewer.c_slider, 'Min', 1);
-    set(handles.stackViewer.c_slider, 'Max', handles.num_channels);
-    set(handles.stackViewer.c_slider, 'SliderStep', [1/(handles.num_channels-1) , 1/(handles.num_channels-1) ]);
-  
+    set(handles.stackViewer.c_slider, 'Max', handles.num_channel);
+    set(handles.stackViewer.c_slider, 'SliderStep', [1/(handles.num_channel-1) , 1/(handles.num_channel-1) ]);
+    
+    
+    
+   
     handles.num_z_slices = size(handles.current_image_stack{1},3);
     
     set(handles.stackViewer.z_slider, 'Min', 1);
     set(handles.stackViewer.z_slider, 'Max',  handles.num_z_slices );
     set(handles.stackViewer.z_slider, 'SliderStep', [1/( handles.num_z_slices -1) , 1/( handles.num_z_slices -1) ]);
+    
     
     current_channel = handles.stackViewer.c_value;
     current_z_slice = handles.stackViewer.z_value;
@@ -296,73 +205,48 @@ if handles.image_displayed
     imdata = handles.current_image_stack;
 
     current_image = imdata{current_channel}(:,:,current_z_slice);
-   
+    
+    
     % Automatic rescaling
     bincounts = histc(current_image(:), [0.5:1:65535.5]);
     cdf=cumsum(bincounts)/size(current_image,1)/size(current_image,2);
     
-    if ~isfield(handles.stackViewer, 'min_value')
-        handles.stackViewer.min_value = zeros(1, handles.num_channels);
-        handles.stackViewer.max_value = zeros(1, handles.num_channels);
-    end
-    
-    if handles.stackViewer.min_value(current_channel) == 0
-        lower_bound = find(cdf> 0.02,1, 'first');
-        handles.stackViewer.min_value(current_channel) = lower_bound;
-        higher_bound = find(cdf> 0.98,1, 'first');
-        handles.stackViewer.max_value(current_channel) = higher_bound;
-    end
-    
-    set(handles.stackViewer.min_box, 'String', num2str(handles.stackViewer.min_value(current_channel)));
-    set(handles.stackViewer.max_box, 'String', num2str(handles.stackViewer.max_value(current_channel)));
-    
+    lower_bound = find(cdf> 0.02,1, 'first');
+    higher_bound = find(cdf> 0.98,1, 'first');
     figure(handles.stackViewer.window);
+%     ax = axes('Parent',fig);
     xlim = get(gca, 'XLim');
     ylim = get(gca, 'YLim');
-    
-    mask_im = mat2gray(current_image,[handles.stackViewer.min_value(current_channel) handles.stackViewer.max_value(current_channel)]);
-    if strcmp(handles.menu_showSegment.Checked, 'on')
-        colors = parula(handles.stack.frame(handles.image_displayed).number_cells);
-        for k = 1:handles.stack.frame(handles.image_displayed).number_cells
-            dilated_im = imdilate(handles.stack.frame(handles.image_displayed).cell(k).mask, strel('square', 5));
-            outline_im = imdilate(dilated_im, strel('square', 5)) - handles.stack.frame(handles.image_displayed).cell(k).mask;
-            mask_im = imoverlay(mask_im, logical(outline_im), colors(k, :));
-        end
-    end
-    
-    imshow(mask_im)
+    imshow(current_image,[lower_bound higher_bound])
     zoom(gcf,'reset');
     if sum(xlim ~= [0 1]) && sum(ylim ~= [0 1]) % Already something displayed
         set(gca,'xlim',xlim);
         set(gca,'ylim',ylim);
     end
-    
-    if isfield(handles.stack.frame(handles.image_displayed), 'cell') && ~isempty(handles.stack.frame(handles.image_displayed).cell) 
-        if get(handles.stackViewer.showdots_box, 'Value') && isfield(handles.stack.frame(handles.image_displayed).cell(1), 'dots')
-            for cellNo=1:length(handles.stack.frame(handles.image_displayed).cell)
-                if ~isempty(handles.stack.frame(handles.image_displayed).cell(cellNo).dots)
-                    good_dots_stats = handles.stack.frame(handles.image_displayed).cell(cellNo).dots(current_channel).properties;
-                    centroid_to_plot = zeros(length(good_dots_stats),3);
-
-                    for p = 1:length(good_dots_stats)
-                        centroid_to_plot(p,:) = good_dots_stats(p).Centroid;
-                    end
-
-
-                    dots_in_plane = round(centroid_to_plot(:,3)) == current_z_slice;
-                    centroids_in_plane = centroid_to_plot(dots_in_plane,1:2);
-                    hold on;
-                    viscircles(centroid_to_plot(:,1:2),repmat(2,size(centroid_to_plot(:,1:2),1),1),'color','g');
-                    viscircles(centroids_in_plane,repmat(2,size(centroids_in_plane,1),1));
-                    hold off;
-                end
+    if ~isempty(handles.stack.frame(handles.image_displayed).cell) 
+        for cellNo=1:length(handles.stack.frame(handles.image_displayed).cell)
+                good_dots_stats = handles.stack.frame(handles.image_displayed).cell(cellNo).dots(current_channel).properties;
+                centroid_to_plot = zeros(length(good_dots_stats),3);
                 
-            end 
+                for p = 1:length(good_dots_stats)
+                    centroid_to_plot(p,:) = good_dots_stats(p).Centroid;
+                end
+                            
+                       
+                   dots_in_plane = round(centroid_to_plot(:,3)) == current_z_slice;
+                   centroids_in_plane = centroid_to_plot(dots_in_plane,1:2);
+                   hold on;
+                   viscircles(centroid_to_plot(:,1:2),repmat(2,size(centroid_to_plot(:,1:2),1),1),'color','g');
+                   viscircles(centroids_in_plane,repmat(2,size(centroids_in_plane,1),1));
+                   hold off;
+                   
+                
         end
     end
     
+    %          figure(handles.ax_main_image);
 end
-
+% guidata(hObject, handles)
 % --------------------------------------------------------------------
 function menu_addCell_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addCell (see GCBO)
@@ -373,8 +257,8 @@ if handles.image_displayed
     h = figure;
     imdata = handles.current_image_stack;
     % Show max proj of current stack (first 3 channels)
-    max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(handles.num_channels,3));
-    for i=1:min(handles.num_channels,3)
+    max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(handles.num_channel,3));
+    for i=1:min(handles.num_channel,3)
         max_proj{i} = max(imdata{i},[],3);
         
         % Automatic rescaling to display RGB
@@ -390,240 +274,68 @@ if handles.image_displayed
     imshow(max_proj_rescaled)
     
     BW_mask = roipoly;
-    if isfield(handles.stack, 'dot_thresholds')
-        [handles, dots] = dotCounting(handles, imdata, BW_mask);
-        handles.stack.frame(handles.image_displayed).cell(handles.stack.frame(handles.image_displayed).number_cells).dots = dots;
-    end
     
+    [handles, dots] = dotCounting( handles, imdata, BW_mask);
     close(h);
-    if ~isfield(handles.stack.frame(handles.image_displayed), 'number_cells') || handles.stack.frame(handles.image_displayed).number_cells == 0
-        set(handles.menu_removeCell, 'Enable', 'On')
-    end
-    
     handles.stack.frame(handles.image_displayed).number_cells = handles.stack.frame(handles.image_displayed).number_cells + 1;
     handles.stack.frame(handles.image_displayed).cell(handles.stack.frame(handles.image_displayed).number_cells).mask  = BW_mask;
+    handles.stack.frame(handles.image_displayed).cell(handles.stack.frame(handles.image_displayed).number_cells).dots = dots;
     
-    handles = update_display(hObject,handles);
-    guidata(hObject, handles)  
+    
+    guidata(hObject, handles)
+    
+    
+    
 end
 
-% --------------------------------------------------------------------
-function menu_segmentCells_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_segmentCells (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-    if strcmp(hObject.Checked, 'off')
-        set(hObject, 'Checked', 'on')
-    else
-        figure(handles.seg_parameters.window);
-    end
-    
-    handles.seg_parameters.window = figure('Name', 'Segmentation Parameters', 'Menubar', 'none', 'Toolbar', 'figure', 'Position', [500 500 200 100], 'CloseRequestFcn', {@menu_segmentCells_CloseRequestFcn, hObject});
-    ax = axes('Units', 'pixels', 'Visible', 'off'); 
-    uicontrol('Style', 'text', 'String', 'Channel', 'Position', [5 60 50 10]);  
-    uicontrol('Style', 'text', 'String', 'Threshold', 'Position', [5 40 50 10]); 
-    uicontrol('Style', 'text', 'String', 'Channel', 'Position', [115 60 50 10]); 
-    uicontrol('Style', 'text', 'String', 'Threshold', 'Position', [115 40 50 10]);
-    uicontrol('Style', 'text', 'String', 'Cell', 'Position', [30 80 50 10]);
-    uicontrol('Style', 'text', 'String', 'Nucleus', 'Position', [135 80 50 10]);
-    
-    if ~isfield(handles.seg_parameters, 'seg_channel')
-        handles.seg_parameters.seg_channel = 1; handles.seg_parameters.seg_threshold = 1500; 
-        handles.seg_parameters.nuc_channel = 1; handles.seg_parameters.nuc_threshold = 1500;
-    end
-    
-    handles.seg_parameters.seg_channel_editbox = uicontrol('Style', 'edit', 'String', num2str(handles.seg_parameters.seg_channel), 'Position', [55 55 30 20], 'Callback', {@seg_channel_Callback, hObject});
-    handles.seg_parameters.seg_threshold_editbox = uicontrol('Style', 'edit', 'String', num2str(handles.seg_parameters.seg_threshold), 'Position', [55 35 30 20], 'Callback', {@seg_threshold_Callback, hObject});
-    handles.seg_parameters.nuc_channel_editbox = uicontrol('Style', 'edit', 'String', num2str(handles.seg_parameters.nuc_channel), 'Position', [165 55 30 20], 'Callback', {@nuc_channel_Callback, hObject});
-    handles.seg_parameters.nuc_threshold_editbox = uicontrol('Style', 'edit', 'String', num2str(handles.seg_parameters.nuc_threshold), 'Position', [165 35 30 20], 'Callback', {@nuc_threshold_Callback, hObject});
-    
-    uicontrol('Style', 'pushbutton', 'String', 'Segment!', 'Position', [80 5 55 20], 'Callback', {@seg_button_Callback, hObject});
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function menu_segmentCells_CloseRequestFcn(parent, ~, hObject)
-    
-    handles = guidata(hObject);
-    set(handles.menu_segmentCells, 'Checked', 'off')
-    delete(parent);
-    guidata(hObject, handles);
-    
-% --------------------------------------------------------------------   
-function seg_channel_Callback(parent, ~, hObject)
-        
-    handles = guidata(hObject);
-    handles.seg_parameters.seg_channel = str2double(get(handles.seg_parameters.seg_channel_editbox, 'String'));
-    guidata(hObject, handles);
-    
-% --------------------------------------------------------------------
-function seg_threshold_Callback(~, ~, hObject)
-
-    handles = guidata(hObject);
-    handles.seg_parameters.seg_threshold = str2double(get(handles.seg_parameters.seg_threshold_editbox, 'String'));
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function nuc_channel_Callback(~, ~, hObject)
-        
-    handles = guidata(hObject);
-    handles.seg_parameters.nuc_channel = str2double(get(handles.seg_parameters.nuc_channel_editbox, 'String'));
-    guidata(hObject, handles);
-    
-% --------------------------------------------------------------------
-function nuc_threshold_Callback(~, ~, hObject)
-
-    handles = guidata(hObject);
-    handles.seg_parameters.nuc_threshold = str2double(get(handles.seg_parameters.nuc_threshold_editbox, 'String'));
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function seg_button_Callback(~, ~, hObject)
-     
-    handles = guidata(hObject);
-    % load each image and segment
-    for k = 1:handles.stack.number_images
-        imdata = czi_open(handles.stack.image_path_cell{k});
-        seg_channel_data = imdata{handles.seg_parameters.seg_channel};
-        nuc_channel_data = imdata{handles.seg_parameters.nuc_channel};
-        [seg_im, ~] = segment_on_bg(seg_channel_data, handles.seg_parameters.seg_threshold, nuc_channel_data, handles.seg_parameters.nuc_threshold);
-        
-        for p = 1:max(max(seg_im))
-            BW_mask = 0*seg_im; BW_mask(seg_im == p) = 1;
-            handles.stack.frame(k).number_cells = handles.stack.frame(k).number_cells + 1;
-            handles.stack.frame(k).cell(handles.stack.frame(k).number_cells).mask = BW_mask;
-        end
-    end
-    handles = update_display(hObject,handles);
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function menu_showSegment_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_showSegment (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-    
-    if strcmp(get(hObject, 'Checked'), 'off')
-        set(hObject, 'Checked', 'on');
-    else
-        set(hObject, 'Checked', 'off');
-    end    
-    handles = update_display(hObject,handles);
-    guidata(hObject, handles);
-
-% --------------------------------------------------------------------
-function menu_detectDots_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_detectDots (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    if strcmp(hObject.Checked,'on')
-%         set(hObject, 'Checked', 'off')
-        figure(handles.threshold.window);
-    else
-        hObject.Checked = 'on';
-        window_position = getpixelposition(handles.figure1);
-        handles.threshold.window = figure('Name', 'Threshold settings', 'Menubar', 'none', 'Position', [window_position(1), window_position(2), 261, 271], 'CloseReq', {@menu_threshold_CloseRequest_Fcn, hObject}); % 'Keypress', {@onkeypress, hObject}'ResizeFcn', {@movie_slider_ResizeFcn, hObject});
-        handles.threshold.status = uicontrol(gcf, 'Style', 'text', 'Position', [141, 150, 104, 35], 'String', 'Status: Done', 'FontSize', 16);
-        
-        if ~isfield(handles, 'dot_thresholds')
-            handles = get_thresholds(handles);
-            if handles.stack.frame(handles.image_displayed).number_cells > 0
-                handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
-            end
-        end
-        
-        handles.threshold.chk_auto_threshold = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 218, 95, 19], 'Value', 1, 'String', 'Auto Threshold', 'Callback', {@chk_auto_threshold_Callback, hObject});
-        handles.stack.autothreshold = 1;
-
-        handles.threshold.button_rethreshold = uicontrol(gcf, 'Style', 'pushbutton', 'Position', [141, 210, 84, 35], 'String', 'Detect Dots', 'Callback', {@button_rethreshold_Callback, hObject});
-        
-        for i=1:handles.num_channels
-            handles.threshold.(['edit_channel' num2str(i)]) = uicontrol(gcf, 'Style', 'edit', 'Position', [26, 170-40*(i-1), 46, 34], 'String', num2str(handles.stack.dot_thresholds(i)), 'Callback', {@change_threshold_Callback, hObject}, 'Tag', ['edit_channel' num2str(i)], 'Enable', 'off');
-            %handles.threshold.(['channel' num2str(i)]) = '';
-        end
-        
-    end
-    guidata(hObject, handles)
-
-% --------------------------------------------------------------------
-function handles = get_thresholds(handles)
-    
-    [imdata, num_channels] = czi_open(handles.stack.image_path_cell{1});
-
-    seg_im = 0*imdata{1}(:, :, 1);
-    if handles.stack.frame(1).number_cells > 0
-        for p = 1:handles.stack.frame(1).number_cells
-            seg_im(handles.stack.frame(1).cell(p).mask == 1) = p;
-        end
-    end
-
-    handles.stack.dot_thresholds = detect_dot_thresh(imdata, num_channels, seg_im);
-    
-      
 % --------------------------------------------------------------------
 function menu_removeCell_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_removeCell (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    if ~isempty(handles.stack.frame(handles.image_displayed).cell)
-        h= figure;
-        num_channels = handles.num_channels;
-        imdata = handles.current_image_stack;
-        % Show max proj of current stack (first 3 channels)
-        max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(num_channels,3));
-        for i=1:min(num_channels,3)
-            max_proj{i} = max(imdata{i},[],3);
-
-            % Automatic rescaling to display RGB
-            bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
-            cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
-
-            lower_bound(i) = find(cdf> 0.05,1, 'first');
-            higher_bound(i) = find(cdf> 0.95,1, 'first');
-            max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
-
-        end
-        %          figure(handles.ax_main_image);
-
-        mask_im = max_proj_rescaled;
-        colors = parula(handles.stack.frame(handles.image_displayed).number_cells);
-        for k = 1:handles.stack.frame(handles.image_displayed).number_cells
-            dilated_im = imdilate(handles.stack.frame(handles.image_displayed).cell(k).mask, strel('square', 5));
-            outline_im = dilated_im - handles.stack.frame(handles.image_displayed).cell(k).mask;
-            mask_im = imoverlay(mask_im, logical(outline_im), colors(k, :));
-        end
-
-        imshow(mask_im)
-
-
-        [xClick, yClick, W]=ginput(1);
-        xClick = round(xClick);
-        yClick = round(yClick);
-        click_image = zeros(size(max_proj_rescaled)) ;
-        click_image(yClick,xClick) = 1;
-        cellToRemove = 0;
-        for i=1:handles.stack.frame(handles.image_displayed).number_cells
-            match = find(logical(click_image(:, :, 1)).*handles.stack.frame(handles.image_displayed).cell(i).mask,1,'first');
-            if match
-                cellToRemove = i;
-            end
-        end
-        if cellToRemove
-            indexToKeep = setxor(1:handles.stack.frame(handles.image_displayed).number_cells,cellToRemove);
-            handles.stack.frame(handles.image_displayed).number_cells = handles.stack.frame(handles.image_displayed).number_cells -1;
-            if handles.stack.frame(handles.image_displayed).number_cells == 0
-                set(handles.menu_removeCell, 'Enable', 'Off');
-            end
-
-            handles.stack.frame(handles.image_displayed).cell = handles.stack.frame(handles.image_displayed).cell(indexToKeep);
-        end
-        close(h);
+if ~isempty(handles.stack.frame(handles.image_displayed).cell)
+    h= figure;
+    num_channels = handles.num_channel;
+    imdata = handles.current_image_stack;
+    % Show max proj of current stack (first 3 channels)
+    max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(num_channels,3));
+    for i=1:min(num_channels,3)
+        max_proj{i} = max(imdata{i},[],3);
+        
+        % Automatic rescaling to display RGB
+        bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
+        cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
+        
+        lower_bound(i) = find(cdf> 0.05,1, 'first');
+        higher_bound(i) = find(cdf> 0.95,1, 'first');
+        max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
+        
     end
-    handles = update_display(hObject,handles);
-    guidata(hObject, handles)
-
+    %          figure(handles.ax_main_image);
+    imshow(max_proj_rescaled)
+    
+    [xClick, yClick, W]=ginput(1);
+    xClick = round(xClick);
+    yClick = round(yClick);
+    click_image = zeros(size(max_proj_rescaled)) ;
+    click_image(yClick,xClick) = 1;
+    cellToRemove = 0;
+    for i=1:handles.stack.frame(handles.image_displayed).number_cells
+        match = find(logical(click_image).*handles.stack.frame(handles.image_displayed).cell(i).mask,1,'first');
+        if match
+            cellToRemove = i;
+        end
+    end
+    if cellToRemove
+        indexToKeep = setxor(1:handles.stack.frame(handles.image_displayed).number_cells,cellToRemove);
+        handles.stack.frame(handles.image_displayed).number_cells = handles.stack.frame(handles.image_displayed).number_cells -1;
+        handles.stack.frame(handles.image_displayed).cell = handles.stack.frame(handles.image_displayed).cell(indexToKeep);
+    end
+    close(h);
+end
+guidata(hObject, handles)
 % --------------------------------------------------------------------
 function menu_newStack_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_newStack (see GCBO)
@@ -685,89 +397,158 @@ function menu_saveStack_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_saveStack (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    stack = handles.stack;
-    save(handles.stack.name, 'stack')
-
+stack = handles.stack;
+save(handles.stack.name, 'stack')
 % --------------------------------------------------------------------
 function menu_addImages_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addImages (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    [FileName,PathName] = uigetfile('*.czi','MultiSelect','on');
+[FileName,PathName] = uigetfile('*.czi','MultiSelect','on');
 
-    if ~isfield(handles.stack, 'name')
-            [StackFileName,StackPathName] = uiputfile('*.mat', 'Specify Stack name');
-            handles.stack.name = [StackPathName, StackFileName];
-            handles.open_stack = 1;
-            set(handles.txt_stack,'String', StackFileName)
-            
-            handles.stack.number_images = 0;
-            handles.stack.image_path_cell = {};
-            handles.stack.frame.cells = struct;
-            handles.stack.frame.number_cells = 0;
-            handles.image_displayed = 0;
-            handles.current_image_stack = [];
-            guidata(hObject, handles)
-    end
-
-
-    if ~isa(FileName, 'double') %Dialog not closed
-
-        if isa(FileName, 'cell') % More than one file
-
-            for i=1:length(FileName)
-                handles.stack.image_path_cell{length( handles.stack.image_path_cell) + 1} = [PathName FileName{i}];
-                handles.stack.frame(handles.stack.number_images + i).number_cells = 0;
-            end
-
-            handles.stack.number_images = handles.stack.number_images + length(FileName);
-
-
-        else
-            if isfield(handles.stack, 'number_images')
-                handles.stack.number_images = handles.stack.number_images + 1;
-            else
-                handles.stack.number_images = 1;
-            end
-
-            handles.stack.frame(handles.stack.number_images).number_cells = 0;
-            handles.stack.image_path_cell{length( handles.stack.image_path_cell) + 1} = [PathName FileName];
+if ~isa(FileName, 'double') %Dialog not closed
+    
+    if isa(FileName, 'cell') % More than one file
+       
+        for i=1:length(FileName)
+            handles.stack.image_path_cell{length( handles.stack.image_path_cell) + 1} = [PathName FileName{i}];
+            handles.stack.frame(handles.stack.number_images + i).number_cells = 0;
         end
-
-        handles = update_display(hObject,handles);
-        guidata(hObject, handles)
-
-
+                
+        handles.stack.number_images = handles.stack.number_images + length(FileName);
+        
+        
+    else
+        handles.stack.number_images = handles.stack.number_images + 1;
+        handles.stack.frame(handles.stack.number_images).number_cells = 0;
+        handles.stack.image_path_cell{length( handles.stack.image_path_cell) + 1} = [PathName FileName];
     end
     
-    % --------------------------------------------------------------------
-function menu_removeImage_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_removeImage (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-    if handles.stack.number_images > 1
-        handles.stack.number_images = handles.stack.number_images - 1;
-        handles.stack.image_path_cell = handles.stack.image_path_cell([1:handles.image_displayed - 1, handles.image_displayed + 1:end]);
-        handles.stack.frame = handles.stack.frame([1:handles.image_displayed - 1, handles.image_displayed + 1:end]);
-        handles.image_displayed = max(1, handles.image_displayed - 1);
-        handles.current_image_stack = [];
-        handles = update_display(hObject,handles);
-        guidata(hObject, handles)
-    end
+    handles = update_display(hObject,handles);
+    guidata(hObject, handles)
+    
+    
+end
 
 % --------------------------------------------------------------------
-function [handles, dots] = dotCounting(handles, imdata, cell_mask)
-    set(gcf,'pointer','watch');
+function handles = update_display(hObject,handles)
+% TO DO: show cell outline
+% TO DO: select cell to zoom on, keep focus on
+if handles.image_displayed == 0 && handles.stack.number_images >= 1
+    handles.image_displayed = 1;
+end
 
-    BW_mask = cell_mask;
-    dots = detect_dots(imdata, BW_mask, handles.num_channels, handles.stack.dot_thresholds);
+if handles.image_displayed
+    set(handles.txt_image_counter,'String', [num2str(handles.image_displayed) '/' num2str(handles.stack.number_images) ] );
+    set(handles.slider_select_image, 'Value', handles.image_displayed);
+    set(handles.slider_select_image, 'Min', 1);
+    set(handles.slider_select_image, 'Max', handles.stack.number_images);
+    set(handles.slider_select_image, 'SliderStep', [1/(handles.stack.number_images-1) , 1/(handles.stack.number_images-1) ]);
+    if isempty(handles.current_image_stack)
+        % Load the file stack %ADD NUMBER CHANNEL DETECTION
+        
+        [handles.current_image_stack, handles.num_channel] = czi_open(handles.stack.image_path_cell{handles.image_displayed});
+            
+
+    end
+    num_channels = handles.num_channel;
+    imdata = handles.current_image_stack;
+    % Show max proj of current stack (first 3 channels)
+    max_proj={};max_proj_rescaled=zeros(size(imdata{1},1),size(imdata{1},2),min(num_channels,3));
+    for i=1:min(num_channels,3)
+        max_proj{i} = max(imdata{i},[],3);
+        
+        % Automatic rescaling to display RGB
+        bincounts = histc(max_proj{i}(:), [0.5:1:65535.5]);
+        cdf=cumsum(bincounts)/size(max_proj{i},1)/size(max_proj{i},2);
+        
+        lower_bound(i) = find(cdf> 0.05,1, 'first');
+        higher_bound(i) = find(cdf> 0.95,1, 'first');
+        max_proj_rescaled(:,:,i)=mat2gray(max_proj{i},[lower_bound(i) higher_bound(i)]);
+        
+    end
+    %          figure(handles.ax_main_image);
+    imshow(max_proj_rescaled)
     
-    % TO DO
-    % -remove dots that colocalize
-    set(gcf,'pointer','arrow');
+    if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update stackViewer
+        handles = update_stackViewer_display(hObject,handles);
+    end
+     
+end
+
+
+% --------------------------------------------------------------------
+function [handles, dots] = dotCounting( handles, imdata, cell_mask)
+set(gcf,'pointer','watch');
+
+BW_mask = cell_mask;
+dots = struct;
+for k = 1:handles.num_channel
+    %             if k ~= nuc_channel_index
+    im_stack = imdata{k};
+    seg_im=uint16(BW_mask);
+
+    masked_im_stack = bsxfun(@times, im_stack, seg_im);
+
+    % Background substract (substract cell background)
+    bg_level = median(nonzeros(masked_im_stack(:)));
+    im_stack = max(0,im_stack - bg_level);
+    
+    
+%     % 3D gaussian filtering
+    SIGMA_GAUSS_FILT = 0.5;
+    gauss_filt_imstack = imgaussfilt3(im_stack,SIGMA_GAUSS_FILT); %0*im_stack;
+    pot_dots_im = imregionalmax(gauss_filt_imstack);
+    log_filt_imstack = im_stack;
+    for i =1:size(im_stack,3)
+        log_filt_imstack(:,:,i) = logMask(im_stack(:,:,i));
+        
+    end
+    
+
+    
+    
+    masked_im_stack = bsxfun(@times, log_filt_imstack, seg_im);
+    %some attempt at auto thresholding
+    if handles.stack.autothreshold == 1
+        frac_thres = graythresh(mat2gray(nonzeros(masked_im_stack)));
+        thresh = frac_thres*(max(nonzeros(masked_im_stack))-min(nonzeros(masked_im_stack)))+min(nonzeros(masked_im_stack));
+        handles.threshold.(['channel' num2str(k)]) = thresh;
+        if strcmp(get(handles.menu_threshold,'Checked'), 'on') % Display threshold
+            set(handles.threshold.(['edit_channel' num2str(k)]),'String',num2str(handles.threshold.(['channel' num2str(k)])));
+        end
+    else
+        thresh = handles.threshold.(['channel' num2str(k)]);
+        %TO DO: validate that we have a set threshold before using it
+    end
+    
+    %                 thresh = 6000;
+    thresh_stack = masked_im_stack  ;
+    thresh_stack(thresh_stack < thresh) = 0;
+    % alternative: take local maximum but don't threshold on area
+    thresh_stack = double(thresh_stack) .* pot_dots_im;    
+    
+    conn_list = bwconncomp(thresh_stack,26);
+    stats = regionprops(conn_list);
+    idx_to_keep = [stats.Area] >= 1 ;
+    good_dots_stats = stats(idx_to_keep);
+    centroid_to_plot = zeros(length(good_dots_stats),3);
+    
+    for p = 1:length(good_dots_stats)
+        centroid_to_plot(p,:) = good_dots_stats(p).Centroid;
+    end
+    
+    dots(k).properties = good_dots_stats;
+    dots(k).counts = length(good_dots_stats);
+    
+end
+% TO DO
+% -remove dots that colocalize
+set(gcf,'pointer','arrow');
+
+
+
 
 % --- Executes on slider movement.
 function slider_select_image_Callback(hObject, eventdata, handles)
@@ -778,19 +559,20 @@ function slider_select_image_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
-    image_to_display = round(get(hObject,'Value'));
-    set(hObject,'Value',image_to_display);
+image_to_display = round(get(hObject,'Value'));
+set(hObject,'Value',image_to_display);
 
-    if image_to_display ~= handles.image_displayed % New image
-        handles.image_displayed = get(hObject,'Value');
-        handles.current_image_stack = [];
+if image_to_display ~= handles.image_displayed % New image
+    handles.image_displayed = get(hObject,'Value');
+    handles.current_image_stack = [];
+    
+    
+    handles = update_display(hObject,handles);
+    
+end
 
+guidata(hObject, handles)
 
-        handles = update_display(hObject,handles);
-
-    end
-
-    guidata(hObject, handles)
 
 
 % --- Executes during object creation, after setting all properties.
@@ -805,95 +587,111 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 
+function lapFrame = logMask(im)   %**check that have the right logMask function
+
+k = [-4 -1  0 -1 -4;...
+     -1  2  3  2 -1;...
+      0  3  4  3  0;...
+     -1  2  3  2 -1;...
+     -4 -1  0 -1 -4];
+
+lapFrame = imfilter(im,k,'repl');
+
+
 % --------------------------------------------------------------------
+function menu_threshold_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_threshold (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+if strcmp(handles.menu_threshold.Checked,'on')
+    handles.menu_threshold.Checked = 'off';
+    menu_threshold_CloseRequest_Fcn(handles.threshold.window, 1, hObject);
+else
+    handles.menu_threshold.Checked = 'on';
+    window_position = getpixelposition(handles.figure1);
+    handles.threshold.window = figure('Name', 'Threshold settings', 'Menubar', 'none', 'Position', [window_position(1), window_position(2), 261, 271], 'CloseReq', {@menu_threshold_CloseRequest_Fcn, hObject}); % 'Keypress', {@onkeypress, hObject}'ResizeFcn', {@movie_slider_ResizeFcn, hObject});
+    
+    handles.threshold.chk_auto_threshold = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 218, 95, 19], 'Value', 1, 'String', 'Auto Threshold', 'Callback', {@chk_auto_threshold_Callback, hObject});
+    handles.stack.autothreshold = 1;
+
+    handles.threshold.button_rethreshold = uicontrol(gcf, 'Style', 'pushbutton', 'Position', [141, 210, 84, 35], 'String', 'Rethreshold all', 'Callback', {@button_rethreshold_Callback, hObject});
+    
+    for i=1:handles.num_channel
+        handles.threshold.(['edit_channel' num2str(i)]) = uicontrol(gcf, 'Style', 'edit', 'Position', [26, 170-40*(i-1), 46, 34], 'String', '', 'Callback', {@change_threshold_Callback, hObject}, 'Tag', ['edit_channel' num2str(i)]);
+        handles.threshold.(['channel' num2str(i)]) = '';
+    end
+    %     handles.list_of_open_objects(end + 1) = handles.stackViewer.window;
+end
+guidata(hObject, handles)
+
 function chk_auto_threshold_Callback(parent,~ ,hObject)
 
-    handles = guidata(hObject);
+handles = guidata(hObject);
 
-    if get(parent,'value')
-        handles.stack.autothreshold = 1;
-        
-        handles = get_thresholds(handles);
-        if handles.stack.frame(handles.image_displayed).number_cells > 0
-            handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
-            if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update display
-                handles = update_stackViewer_display(hObject,handles);
-            end
-        end
-        
-        for i=1:handles.num_channels
-            handles.threshold.(['edit_channel' num2str(i)]).String = num2str(handles.stack.dot_thresholds(i));
-            handles.threshold.(['edit_channel' num2str(i)]).Enable = 'off';
-        end
-        
-    else
-        handles.stack.autothreshold = 0;
-        for i=1:handles.num_channels
-            handles.threshold.(['edit_channel' num2str(i)]).Enable = 'on';
-        end
-    end
+if get(parent,'value')
+    handles.stack.autothreshold = 1;
+else
+    handles.stack.autothreshold = 0;
+end
 
-    guidata(hObject, handles)
+guidata(hObject, handles)
 
-% --------------------------------------------------------------------
+
 function button_rethreshold_Callback(parent,~ ,hObject)
 
-    handles = guidata(hObject);
-    handles.threshold.status.String = 'Detecting ...';
-    pause(1);
-    for fov=1:handles.stack.number_images
-       if  ~isempty(handles.stack.frame(fov).cell)
-           for cellNo=1:handles.stack.frame(fov).number_cells
-               handles = rethreshold_cell(handles, fov, cellNo);
-               % TO DO: threshold all cells in fov at same time
-           end
+handles = guidata(hObject);
+for fov=1:handles.stack.number_images
+   if  ~isempty(handles.stack.frame(fov).cell)
+       for cellNo=1:handles.stack.frame(fov).number_cells
+           handles = rethreshold_cell(handles, fov, cellNo);
+           % TO DO: threshold all cells in fov at same time
        end
-    end
-    handles.threshold.status.String = 'Status: Done';
-    guidata(hObject, handles)
+   end
+end
+guidata(hObject, handles)
 
-% --------------------------------------------------------------------
 function change_threshold_Callback(parent,~ ,hObject)
-    handles = guidata(hObject);
-    parent_tag = get(parent,'Tag');
-    channel_to_change = str2double(parent_tag(end));
-    old_threshold = handles.stack.dot_thresholds(channel_to_change);
-    new_threshold = str2double(get(parent,'String'));
+handles = guidata(hObject);
+parent_tag = get(parent,'Tag');
+channel_to_change = parent_tag(end);
+new_threshold = str2num(get(parent,'String'));
 
-    if ~handles.stack.autothreshold && ~isempty(new_threshold) %input validation
-        handles.stack.dot_thresholds(channel_to_change) = new_threshold;
-        %handles.threshold.(['channel' channel_to_change]) = new_threshold;
-    else %put it back the way it was
-        set(parent,'String', num2str(old_threshold));
-    end
+if ~handles.stack.autothreshold && ~isempty(new_threshold) %input validation
+    handles.threshold.(['channel' channel_to_change]) = new_threshold;
     
-    % Rethreshold last cell
-    if handles.stack.frame(handles.image_displayed).number_cells > 0
-        handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
-        if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update display
-            handles = update_stackViewer_display(hObject,handles);
-        end
+else %put it back the way it was
+   set(parent,'String',num2str(handles.threshold.(['channel' channel_to_change]))); 
+end
+% Rethreshold last cell
+if handles.stack.frame(handles.image_displayed).number_cells
+    handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
+    if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update display
+        handles = update_stackViewer_display(hObject,handles);
     end
-    guidata(hObject, handles)
+end
+guidata(hObject, handles)
 
 
 function menu_threshold_CloseRequest_Fcn(parent,~ ,hObject)
-    delete(parent);
-    handles = guidata(hObject);
-    handles.menu_detectDots.Checked = 'off';
-    guidata(hObject, handles)
+delete(parent);
+handles = guidata(hObject);
+handles.menu_threshold.Checked = 'off';
+guidata(hObject, handles)
 
 
-function handles = rethreshold_cell(handles, frame_num, cell_num)
+function handles = rethreshold_cell(handles, frameNo, cellNo)
 
-    BW_mask = handles.stack.frame(frame_num).cell(cell_num).mask ;
-    if frame_num ~= handles.image_displayed %need to load the file
-        imdata = czi_open(handles.stack.image_path_cell{frame_num});
-    else
-        imdata = handles.current_image_stack;
-    end
-    [handles,dots] = dotCounting(handles, imdata, BW_mask);
-    handles.stack.frame(frame_num).cell(cell_num).dots = dots;
+ BW_mask = handles.stack.frame(frameNo).cell(cellNo).mask ; 
+ if frameNo ~= handles.image_displayed %need to load the file
+     imdata = czi_open(handles.stack.image_path_cell{frameNo});
+ else
+     imdata = handles.current_image_stack;
+ end
+ [handles,dots] = dotCounting( handles, imdata, BW_mask);
+
+  handles.stack.frame(frameNo).cell(cellNo).dots = dots;
 
 
 % --- Executes when user attempts to close figure1.
@@ -912,16 +710,12 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
      if strcmp(get(handles.menu_stackViewer,'Checked'),'on')
          stackViewer_CloseRequest_Fcn(handles.stackViewer.window, 1, hObject);
      end
-     
-     if strcmp(get(handles.menu_detectDots,'Checked'),'on')
+     if strcmp(get(handles.menu_threshold,'Checked'),'on')
          menu_threshold_CloseRequest_Fcn(handles.threshold.window, 1, hObject);
      end
-      
-     if strcmp(get(handles.menu_segmentCells,'Checked'),'on')
-         menu_segmentCells_CloseRequestFcn(handles.seg_parameters.window, 1, hObject);
-     end
-     delete(hObject);
      
+
+     delete(hObject);
    case 'No'
      return
  end
