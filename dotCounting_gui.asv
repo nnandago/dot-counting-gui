@@ -22,7 +22,7 @@ function varargout = dotCounting_gui(varargin)
 
 % Edit the above text to modify the response to help dotCounting_gui
 
-% Last Modified by GUIDE v2.5 20-Dec-2017 18:31:46
+% Last Modified by GUIDE v2.5 18-Dec-2017 17:48:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -217,11 +217,7 @@ if handles.image_displayed
         set(handles.slider_select_image, 'Value', handles.image_displayed);
         set(handles.slider_select_image, 'Min', 1);
         set(handles.slider_select_image, 'Max', handles.stack.number_images);
-        if handles.stack.number_images >1
-            set(handles.slider_select_image, 'SliderStep', [1/(handles.stack.number_images-1) , 1/(handles.stack.number_images-1) ]);
-        else
-            set(handles.slider_select_image, 'SliderStep', [1, 1 ]);
-        end
+        set(handles.slider_select_image, 'SliderStep', [1/(handles.stack.number_images - 1), 1/(handles.stack.number_images - 1)]);
     else
         set(handles.slider_select_image, 'Enable', 'off');
     end
@@ -507,7 +503,7 @@ function seg_button_Callback(~, ~, hObject)
     handles = guidata(hObject);
     % load each image and segment
     for k = 1:handles.stack.number_images
-        imdata = load_position(handles,k);
+        imdata = czi_open(handles.stack.image_path_cell{k});
         seg_channel_data = imdata{handles.seg_parameters.seg_channel};
         nuc_channel_data = imdata{handles.seg_parameters.nuc_channel};
         [seg_im, ~] = segment_on_bg(seg_channel_data, handles.seg_parameters.seg_threshold, nuc_channel_data, handles.seg_parameters.nuc_threshold);
@@ -559,9 +555,7 @@ function menu_detectDots_Callback(hObject, eventdata, handles)
         
         handles.threshold.chk_auto_threshold = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 218, 95, 19], 'Value', 1, 'String', 'Auto Threshold', 'Callback', {@chk_auto_threshold_Callback, hObject});
         handles.stack.autothreshold = 1;
-        handles.threshold.chk_live_dot_finding = uicontrol(gcf, 'Style', 'checkbox', 'Position', [31, 250, 95, 19], 'Value', 1, 'String', 'Live dot finding', 'Callback', {@chk_live_dot_finding_Callback, hObject});
-        handles.stack.live_dot_finding = 1;
-    
+
         handles.threshold.button_rethreshold = uicontrol(gcf, 'Style', 'pushbutton', 'Position', [141, 210, 84, 35], 'String', 'Detect Dots', 'Callback', {@button_rethreshold_Callback, hObject});
         
         for i=1:handles.num_channels
@@ -571,24 +565,11 @@ function menu_detectDots_Callback(hObject, eventdata, handles)
         
     end
     guidata(hObject, handles)
-    
-% --------------------------------------------------------------------
-   
-function chk_live_dot_finding_Callback(parent,~ ,hObject)
 
-handles = guidata(hObject);
-
-if get(parent,'value')
-    handles.stack.live_dot_finding = 1;
-else
-    handles.stack.live_dot_finding = 0;
-end
-
-guidata(hObject, handles)
 % --------------------------------------------------------------------
 function handles = get_thresholds(handles)
     
-    [imdata, num_channels] = load_position(handles,1);
+    [imdata, num_channels] = czi_open(handles.stack.image_path_cell{1});
 
     seg_im = 0*imdata{1}(:, :, 1);
     if handles.stack.frame(1).number_cells > 0
@@ -955,8 +936,6 @@ function button_rethreshold_Callback(parent,~ ,hObject)
     handles = guidata(hObject);
     handles.threshold.status.String = 'Detecting ...';
     pause(1);
-    h = waitbar(0);
-
     for fov=1:handles.stack.number_images
        if  ~isempty(handles.stack.frame(fov).cell)
            for cellNo=1:handles.stack.frame(fov).number_cells
@@ -964,9 +943,7 @@ function button_rethreshold_Callback(parent,~ ,hObject)
                % TO DO: threshold all cells in fov at same time
            end
        end
-       waitbar(fov/handles.stack.number_images,h);
     end
-    close(h);
     handles.threshold.status.String = 'Status: Done';
     guidata(hObject, handles)
 
@@ -986,7 +963,7 @@ function change_threshold_Callback(parent,~ ,hObject)
     end
     
     % Rethreshold last cell
-    if handles.stack.frame(handles.image_displayed).number_cells > 0  && handles.stack.live_dot_finding
+    if handles.stack.frame(handles.image_displayed).number_cells > 0
         handles = rethreshold_cell(handles, handles.image_displayed, length(handles.stack.frame(handles.image_displayed).cell));
         if strcmp(get(handles.menu_stackViewer,'checked'),'on') %also update display
             handles = update_stackViewer_display(hObject,handles);
@@ -1006,7 +983,7 @@ function handles = rethreshold_cell(handles, frame_num, cell_num)
 
     BW_mask = handles.stack.frame(frame_num).cell(cell_num).mask ;
     if frame_num ~= handles.image_displayed %need to load the file
-        imdata = load_position(handles,frameNo);
+        imdata = czi_open(handles.stack.image_path_cell{frame_num});
     else
         imdata = handles.current_image_stack;
     end
