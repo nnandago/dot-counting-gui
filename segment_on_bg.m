@@ -1,9 +1,14 @@
 function [seg_im, nuc_im] = segment_on_bg(seg_channel_data, SEG_THRES, nuc_channel_data, NUC_THRES)
 %%% segments cells based on autofluorescence in seg_channel. 
 %%% if nuclei are fluorescent in separate channel nuc_channel, segments
-%%% them too
+%%% them too. 
 
-    %SEG_THRES = 1500; NUC_THRES = 1000;
+%%% Note: 'seg_channel_data' and 'nuc_channel_data' are 3-D matrices corresponding to
+%%% Z-stacks, with the third dimension representing slices. 
+
+%%% Note: update SEG_THRES and NUC_THRES as appropriate
+
+
     num_slices = size(seg_channel_data, 3);
 
     % segment nucleus first
@@ -23,7 +28,7 @@ function [seg_im, nuc_im] = segment_on_bg(seg_channel_data, SEG_THRES, nuc_chann
     end
     nuc_im = logical(nuc_im);
     
-    bg = median(median(medfilt2(seg_channel_data(:, :, k), [5 5])));
+    bg = median(median(medfilt2(seg_channel_data(:, :, 1), [5 5])));
     avg_seg_channel = sum(seg_channel_data - bg, 3)/num_slices;
     
     temp_seg_im = 0*avg_seg_channel; 

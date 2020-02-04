@@ -1,12 +1,17 @@
 function dots = detect_dots(imdata, seg_im, num_channels, thresholds)
     
+    % imdata is a cell array of 3D matrices, where each element of the
+    % array corresponds to a Z-stack in particular imaging channel. The
+    % variable 'thresholds' contains values used to threshold FISH
+    % dots in each channel, and thus has to contain 'num_channels' values.
+    
     dots = struct; DOT_AREA = 2; centroids = cell(num_channels, 1);
     for k = 1:num_channels
         im_stack = imdata{k};
         for p = 1:size(im_stack, 3)
-            bg_sub_imstack(:, :, p) = im_stack(:, :, p) - medfilt2(im_stack(:, :, p), [5 5]); %logMask(im_stack(:, :, p)).*uint16(logical(seg_im));
+            bg_sub_imstack(:, :, p) = im_stack(:, :, p) - medfilt2(im_stack(:, :, p), [5 5]); 
         end
-        log_filt_imstack = bg_sub_imstack; %imgaussfilt3(bg_sub_imstack, 0.8); %0*im_stack;
+        log_filt_imstack = bg_sub_imstack; 
         pot_dots_im = imregionalmax(log_filt_imstack);
                 
         thresh_stack = bsxfun(@times, bg_sub_imstack, uint16(seg_im)); 
@@ -18,10 +23,6 @@ function dots = detect_dots(imdata, seg_im, num_channels, thresholds)
         maxima_dots = unique(nonzeros(labeled_stack.*pot_dots_im));
         big_dots = all_dots([stats.Area] >= DOT_AREA);
         idx_to_keep = intersect(maxima_dots, big_dots);
-        
-%         conn_list = bwconncomp(thresh_stack, 26);        
-%         stats = regionprops(conn_list);
-%         idx_to_keep = [stats.Area] >= DOT_AREA;
                 
         good_dots_stats = stats(idx_to_keep);
         dots(k).properties = good_dots_stats;
@@ -51,17 +52,4 @@ function dots = detect_dots(imdata, seg_im, num_channels, thresholds)
     
     dots_std_to_keep = find(~ismember(1:length(dots(channel_standard).properties), dots_std_to_remove));
     dots(channel_standard).properties = dots(channel_standard).properties(dots_std_to_keep); dots(channel_standard).counts = length(dots_std_to_keep);
-end
-
-
-% --------------------------------------------------------------------
-function lapFrame = logMask(im)   %**check that have the right logMask function
-
-    k = [-4 -1  0 -1 -4;...
-         -1  2  3  2 -1;...
-          0  3  4  3  0;...
-         -1  2  3  2 -1;...
-         -4 -1  0 -1 -4];
-
-    lapFrame = imfilter(im,k,'repl');
 end
