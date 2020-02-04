@@ -528,6 +528,7 @@ function nuc_threshold_Callback(~, ~, hObject)
 function seg_button_Callback(~, ~, hObject)
      
     handles = guidata(hObject);
+    h = waitbar(0, ['Segmented 0/', num2str(handles.stack.number_images), ' images...']);
     % load each image and segment
     for k = 1:handles.stack.number_images
         imdata = load_position(handles,k);
@@ -540,9 +541,12 @@ function seg_button_Callback(~, ~, hObject)
             handles.stack.frame(k).number_cells = handles.stack.frame(k).number_cells + 1;
             handles.stack.frame(k).cell(handles.stack.frame(k).number_cells).mask = BW_mask;
         end
+        waitbar(k/handles.stack.number_images, h, ['Segmented ', num2str(k), '/', num2str(handles.stack.number_images), ' images...']);
     end
     handles = update_display(hObject,handles);
+    close(h);
     guidata(hObject, handles);
+    
 
 % --------------------------------------------------------------------
 function menu_showSegment_Callback(hObject, eventdata, handles)
